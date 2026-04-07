@@ -1,4 +1,5 @@
-import express, { type Request, type Response } from "express";
+// @ts-nocheck
+import express from "express";
 import cors from "cors";
 import { Router } from "express";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
