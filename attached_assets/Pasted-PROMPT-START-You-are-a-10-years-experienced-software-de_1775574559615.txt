@@ -1,0 +1,496 @@
+PROMPT START
+You are a 10 years experienced software developer building a production-ready, multi-role digital course selling platform using Next.js 14 (App Router), Supabase (PostgreSQL + Auth + Storage + Edge Functions), deployable on Vercel. The platform targets Bangladesh first (Bengali + English bilingual support), with global expansion readiness.
+
+======================================================================
+Website Name: "AI শিখি বাংলায়"
+TECH STACK
+Frontend: Next.js 14 App Router, Tailwind CSS, shadcn/ui
+Database + Auth + Storage: Supabase (PostgreSQL, Row Level Security, Supabase Auth, Supabase Storage)
+Video Hosting: Bunny.net (embed via iframe with signed URLs — do NOT use YouTube)
+Payment — Bangladesh: SSLCommerz (bKash, Nagad, Rocket, card)
+Email: Resend.com (transactional email)
+PDF Certificate Generation: react-pdf or puppeteer (auto-generate on course completion)
+Rich Text Editor: TipTap or Quill (for blog, page builder, community posts)
+======================================================================
+USER ROLES (4 roles with strict permissions)
+super_admin — full access to everything, can assign/remove admin moderator roles.
+admin — full CRUD on courses, students, blog, pages, community, payments.
+moderator — manage community posts only (pin, delete, hide, warn users).
+student — access enrolled courses, community, blog, profile.
+Implement Role-Based Access Control (RBAC) using Supabase Row Level Security (RLS) policies. All routes must be protected by middleware based on role.
+======================================================================
+EKHONI EMPLEMENT KORBA NA. AMI TMAKE STEP BY STEP GUIDE KORBO. TUMI EKHON JUST BOLO ARE YOU READY TO START.
+
+
+Step 1 — আগে database বানাও:
+"Create the complete Supabase database schema with all tables and RLS policies as described. Tables: profiles, courses, sections, lessons, enrollments, progress, orders, coupons, certificates, quiz_questions, quiz_attempts, blog_posts, community_posts, community_replies, community_votes, custom_pages, site_settings, 
+Create must be 4 separate dashboard table (super_admin dashboard, admin dashboard, moderator dashboard, student dashboard) "
+SUPABASE DATABASE SCHEMA (core tables)
+Create these tables with proper RLS policies:
+profiles (id, user_id, name, email, avatar_url, bio, role, is_banned, created_at)
+courses (id, title, slug, description, type, category, price_bdt, price_usd, is_free, thumbnail_url, trailer_url, is_published, created_at)
+sections (id, course_id, title, order_index)
+lessons (id, section_id, course_id, title, type, content_url, is_free_preview, duration_seconds, order_index)
+enrollments (id, user_id, course_id, enrolled_at, payment_id)
+progress (id, user_id, lesson_id, course_id, completed, last_position_seconds, updated_at)
+orders (id, user_id, course_id, amount, currency, payment_method, payment_status, gateway_ref, created_at)
+coupons (id, code, discount_type, discount_value, expiry_date, usage_limit, used_count, is_active)
+certificates (id, user_id, course_id, issued_at, certificate_uid)
+quiz_questions (id, course_id, question, options jsonb, correct_answer, order_index)
+quiz_attempts (id, user_id, course_id, score, passed, attempted_at)
+blog_posts (id, title, slug, content, excerpt, thumbnail_url, category, tags, author_id, status, published_at, meta_title, meta_description, og_image)
+blog_categories (id, name, slug)
+community_posts (id, user_id, title, content, category, is_pinned, is_hidden, upvotes, created_at)
+community_replies (id, post_id, parent_reply_id, user_id, content, upvotes, created_at)
+community_votes (id, user_id, target_id, target_type, vote_type)
+community_reports (id, reporter_id, target_id, target_type, reason, resolved)
+community_rules (id, rule_text, order_index)
+custom_pages (id, title, slug, content, is_published, created_at)
+site_settings (key, value) -- key-value store for all site config
+notifications (id, user_id, type, message, is_read, created_at)
+lesson_notes (id, user_id, lesson_id, content, updated_at)
+lesson_qa (id, lesson_id, user_id, question, answer, answered_at)
+
+DATABASE SCHEMA TOIRI KORA HOYE GELE. SUPABASE A DATABASE TABLE TOIRI KORAR JONNO SQL SCRIPT FILE TOIRI KORE DAO AMI NIJE SUPABASE A DATABASE TABLE QUERY RUN KORBO. SQL SCRIPT TOITI KORA HOYE GELE STEP 2 ASK KORBA.
+======================================================================
+
+Step 2 — Auth system
+"Now build the authentication system — signup, login, forgot password, reset password pages using Supabase Auth with email + Google + Facebook OAuth."
+
+POINT 1: Login Page (/login):
+Email + password
+Google OAuth login (via Supabase)
+Facebook OAuth login (via Supabase)
+Forgot password link
+
+POINT 2: Signup Page (/signup):
+Name, email, password, confirm password
+Google / Facebook OAuth
+Terms agreement checkbox
+
+POINT 3: Forgot Password Page (/forgot-password):
+Email input → send reset link via Resend
+
+POINT 4: Reset Password Page (/reset-password)
+New password + confirm (via Supabase token)
+
+KONO POINT MISS KORBA NA. STEP 2 JOKHON DONE KORBA TOKHON STEP 3 ER JONNO ASK KORBA.
+
+======================================================================
+
+
+
+
+AKHON JODI ACCOUNT CREATE KORI TAHOLE DATA DATABASE A JABE NAKI
+USER CREATE KORAR POR LOGIN KAJ KORBE KINA. JODI O EKHON DASHBOARD CREATE KORA NAI. TAO LOGIN KORLE BLACK PAGE DEKHABE KINA. TUMI NIJE THEKE KONO DASHBOARD CREATE KORBA NA. 
+
+SUPABASE ER DEOYA Confirm your signup LINK A CLICK KORLE LOCALHOST OPEN HOY JETA KAJ KORE NA MANE ACCOUNT VERIFY HOY NA. ATA FIX KORAR JONNO KI KORTE HOBE
+
+======================================================================
+
+Step 3 — Public pages
+"Build the public pages — landing page, course listing, single course detail, blog listing, single blog post, about, contact, privacy policy, terms, refund policy pages, cookie policy."
+
+POINT 1:
+Landing Page (/):
+Hero section with headline, subheadline, CTA button (enroll / browse courses)
+Featured courses section (show top 4–6 courses dynamically from DB)
+Instructor/about section
+Student testimonials section
+Stats section (total students, courses, ratings)
+FAQ section
+Blog preview section (latest 3 posts)
+Community preview section
+Footer with social links, nav links, newsletter signup
+
+POINT 2:
+Course Listing Page (/courses):
+Grid/list view toggle
+Filter by: category, price (free/paid), type (video/PDF/template), rating
+Search bar (full-text search)
+Pagination or infinite scroll
+Each course card shows: thumbnail, title, instructor, price, rating, student count, type badge
+
+POINT 3:
+Single Course Detail Page (/courses/[slug])
+Course title, description, trailer video (free preview)
+Curriculum accordion (section > lessons, locked vs free preview)
+Instructor bio
+Student reviews & ratings (with star rating input)
+Price + enroll button
+Coupon code input field
+What you'll learn section
+Requirements section
+Certificate info
+Social share buttons
+
+POINT 4:
+Blog Listing Page (/blog)
+Cards with thumbnail, title, excerpt, category, date, read time
+Category filter tabs
+Search
+Pagination
+Sidebar: recent posts, popular posts, categories
+
+POINT 5:
+Single Blog Post Page (/blog/[slug])
+Full rich text content
+Author info
+Published date, read time
+Social share (Facebook, Twitter/X, LinkedIn, WhatsApp)
+Related posts
+Comment section (optional, v2)
+AdSense ad placements (header, mid-content, sidebar, footer)
+
+POINT 6:
+About Us Page (/about)
+Fully editable from admin panel
+Rich text + image content
+
+POINT 7:
+Contact Page (/contact)
+Contact form (name, email, message) — sends to admin email via Resend
+Social links
+WhatsApp direct link
+
+POINT 8:
+Privacy Policy Page (/privacy-policy)
+Editable from admin (rich text)
+
+POINT 9:
+Terms & Conditions Page (/terms)
+Editable from admin
+
+POINT 10:
+Refund Policy Page (/refund-policy)
+Editable from admin
+
+POINT 11:
+Community Public View Page (/community)
+Show recent posts publicly (read-only)
+CTA to login/signup to participate
+Community rules visible
+
+
+POINT 12:
+Cookie Policy Page
+Editable from admin
+
+STEP 3 A 12 TA POINT ACHE. AKTA POINT O JENO MISS NA HOY. R KONO POINT ER KONO KISO JENO SKIP NA HOY. EKDOM VALO KORE SOB GULA POINT PORBA THEN BUJHBA THEN EMPLEMENT KORBA. STEP 4 DONE HOLE SOB GULA POINT CHECK KORE VERIFY KORBA THIK ASE KINA TAR POR AMAKE STEP 4 ER REPORT DIBA THEN STEP 5 ASK KORBA
+
+======================================================================
+
+Step 4 — Payment system
+
+"Integrate SSLCommerz for Bangladesh and Stripe for global payments with webhook handlers."
+
+PAYMENT FLOW:
+POINT 1: SSLCommerz (Bangladesh):
+Student clicks enroll → POST to /api/payment/sslcommerz/init → redirect to SSLCommerz payment page
+On success → SSLCommerz POSTs to /api/payment/sslcommerz/success (Supabase Edge Function)
+Verify payment server-side → create orders row → create enrollments row → send receipt email via Resend
+
+POINT 2: Stripe (Global):
+Student clicks enroll → POST to /api/payment/stripe/checkout → Stripe Checkout Session
+On success → Stripe webhook POSTs to /api/payment/stripe/webhook (Supabase Edge Function)
+Verify webhook signature → create orders row → create enrollments row → send receipt email
+
+POINT EXTRA: Stripe ekhon just shows korbe kintu kaj korbe na. eta future a enable korbo ekhon na. ekhon just processes kore rakhbo but unenable thakbe. admin dashboard theke enable and unenable korar option thakbe.
+
+POINT3: Coupon logic:
+Before checkout, validate coupon code via API → return discount amount → show updated price → apply discount in checkout
+
+POTITA POINT DORE DORE KAJ KORBA. KONO POINT JENO MISS NA AND SKIP NA HOY. EI STEP DONE HOLE PORER STEP ASK KORBA
+
+======================================================================
+
+
+
+Step 5 — Student dashboard
+
+"Build the student dashboard — my courses, course player (video/PDF/template), quiz, certificate, profile, billing history."
+
+ALL PAGES — STUDENT (requires login, role: student)
+
+POINT 1: Student Dashboard (/dashboard)
+Welcome message with student name
+Enrolled courses grid with progress bars (% complete per course)
+Continue watching / resume last lesson
+Recent community activity
+Recent purchases / billing summary
+Quick links: My courses, Profile, Community, Certificate
+
+POINT 2: My Courses Page (/dashboard/courses)
+All enrolled courses
+Progress bar per course
+Filter: in-progress, completed, not started
+Access course player button
+
+POINT 3: Course Player Page (/dashboard/courses/[courseId]/learn)
+Video player (Bunny.net embed, with progress save — remember last position)
+PDF viewer (for PDF courses, using signed Supabase Storage URL — no direct download link)
+Template download button (only for enrolled users, signed URL)
+Left sidebar: curriculum with checkmarks for completed lessons, lesson lock/unlock
+Mark lesson as complete button
+Next / Previous lesson navigation
+Notes section (student personal notes per lesson)
+Q&A section per lesson (student asks, admin/instructor answers)
+
+POINT 4: Quiz Page (/dashboard/courses/[courseId]/quiz)
+MCQ or short-answer questions
+Timer (optional per quiz)
+Submit and see results
+Pass/fail based on pass percentage set by admin
+Retry allowed (configurable by admin)
+Show correct answers after submission
+
+POINT 5: Certificate Page (/dashboard/certificates)
+List of earned certificates
+Download certificate as PDF (auto-generated with student name, course name, date, unique ID)
+Share certificate on LinkedIn
+
+POINT 6: Community Full Access Page (/community) — logged in view
+Create new post (rich text + image upload)
+Upvote / downvote posts
+Nested comment/reply system (reply to reply supported)
+Post categories / tags
+Report post or comment button
+Pin/featured posts shown at top (set by moderator/admin)
+Community rules sidebar
+Weekly featured post banner
+Filter: latest, popular, unanswered, my posts
+
+POINT 7: Profile Settings Page (/dashboard/profile)
+Edit name, profile photo, bio, social links
+Change email
+Change password
+Notification preferences (email on new reply, new announcement)
+
+POINT 8: Billing History Page (/dashboard/billing)
+List of all purchases with date, course name, amount, status, invoice download (PDF)
+
+EKHANE STEP ৬ ER ৮ TA POINT ASE. POINT DORE DORE KAJ KORBE. KHUB VALO KORE SOB GULA POINT PORBA THEN EXECUTE KORBA. JODI KONO KISO JANAR THAKE JIGAS KORBA. BE CAREFUL KONO POINT JENO MISS NA HOY EBONG KONO POINT JENO SKIP NA HOY. EI STEP DONE HOLE NEXT STEP ER JONNO ASK KORBA.
+
+==================================DONE====================================
+
+Step 6 — Admin panel
+
+"Build the admin panel with full CRUD — course manager, student manager, blog manager, page builder, community moderation, payment reports, coupon manager, site settings, AdSense settings, SEO settings."
+
+ALL PAGES — ADMIN PANEL (role: admin or super_admin)
+
+Base path: /admin
+
+POINT 1: Admin Dashboard (/admin)
+Total revenue (today, this week, this month, all time)
+Total students, new signups (chart)
+Total enrollments, course-wise breakdown
+Top selling courses
+Recent orders table
+Recent community activity
+
+POINT 2: Course Manager (/admin/courses)
+List all courses (title, type, price, status, students enrolled)
+Create new course button
+Edit, publish/unpublish, delete actions per course
+
+POINT 3: Course Create/Edit Page (/admin/courses/[id])
+Course title, slug (auto-generate from title), description (rich text).
+Course type: video / PDF / template.
+Category, tags.
+Thumbnail image upload.
+Trailer video URL (Bunny.net).
+Price (BDT and USD separately), set as free toggle.
+Certificate: enable/disable, pass percentage for quiz.
+Add sections (drag-and-drop reorder).
+Per section: add lessons (drag-and-drop reorder).
+Per lesson: title, type (video/PDF/template), content/URL/file upload, set as free preview toggle, duration.
+Publish / Save draft button.
+
+POINT 4: Student Manager (/admin/students)
+List all students (name, email, signup date, enrolled courses count, status).
+Search and filter.
+Per student actions:
+View enrolled courses
+Manually enroll into a course (free)
+Remove/terminate from a specific course
+Ban account (disable login)
+Unban account
+Reset course progress
+Revoke certificate
+Send email to student
+
+POINT 5: Blog Manager (/admin/blog)
+List all posts with status (draft, published, scheduled)
+Create new post
+Edit, delete, publish, unpublish, schedule publish
+
+POINT 6: Blog Post Create/Edit (/admin/blog/[id])
+Title, slug, featured image
+Rich text editor (TipTap)
+Category and tags
+SEO meta: title, description, OG image
+Schedule publish (date + time)
+Save draft / Publish
+
+POINT 7: Custom Page Builder (/admin/pages)
+List all custom pages (About, Contact, Privacy, Terms, Refund, + any new page)
+Create new page: set title, slug, content (rich text), publish/unpublish
+Edit existing pages
+Delete custom pages
+These pages render at their slug URL on the public site
+
+POINT 8: Community Moderation Panel (/admin/community)
+List all posts (newest first) with author, votes, replies, status
+Pin post (show at top for all users)
+Hide/delete post
+Warn user (send system warning message)
+Ban user from community only
+View reported posts separately
+Create/edit community rules (stored in DB, shown in community sidebar)
+Assign/remove moderator role to any student
+
+POINT 9: Payment & Orders Manager (/admin/payments)
+List all orders: student name, course, amount, payment method, date, status (success/failed/pending)
+Filter by: date range, payment method (SSLCommerz / Stripe), course
+Refund action (manual flag — actual refund via SSLCommerz/Stripe dashboard)
+Export orders to CSV
+Revenue chart (daily/monthly)
+
+POINT 10: Coupon Manager (/admin/coupons)
+Create coupon: code, discount type (% or flat BDT/USD), discount value, expiry date, usage limit, applicable courses (all or specific)
+List all coupons with usage stats
+Enable/disable/delete coupon
+
+POINT 11: Media Library (/admin/media)
+Upload images, PDFs, templates, ZIP files to Supabase Storage
+List all uploaded files with preview
+Copy signed URL
+Delete file
+
+POINT 12: SEO Settings (/admin/seo)
+Default meta title, meta description, OG image for the site
+Per-page meta override (for custom pages)
+Sitemap.xml auto-generate
+robots.txt editor
+Google Site Verification code input
+Google Analytics measurement ID input (auto-inject into layout)
+Facebook Pixel ID input (auto-inject into layout)
+
+POINT 13: AdSense Settings (/admin/adsense)
+Toggle: enable/disable ads globally
+Input fields for ad unit IDs:
+Header banner ad unit ID
+Mid-content ad unit ID
+Sidebar ad unit ID
+Footer ad unit ID
+
+
+These IDs auto-inject into all public pages and blog pages where applicable
+AdSense publisher ID input (auto-adds the AdSense script to site <head>)
+
+POINT 14: Site Settings (/admin/settings)
+Site name, tagline
+Logo upload (header logo, footer logo)
+Favicon upload
+Primary color (for CTA buttons, links)
+
+Header navigation menu editor (add/remove/reorder menu items, set URL and label)
+           Footer editor:
+
+Column 1: links list (label + URL)
+Column 2: links list
+Column 3: text + links
+Copyright text
+
+Social links: Facebook URL, YouTube URL, Instagram URL, TikTok URL, WhatsApp number, LinkedIn URL, Twitter/X URL
+Contact email, contact phone
+WhatsApp floating button: enable/disable, phone number
+
+POINT 15: Role & Moderator Manager (/admin/roles) — super_admin only
+List all users with their current role
+Change user role: student ↔ admin ↔ moderator
+Revoke admin access
+
+POINT 16: mail Templates Manager (/admin/emails)
+Edit transactional email templates (via Resend):
+     Welcome email (on signup)
+     Enrollment confirmation (with course name and access link)
+     Payment receipt (with invoice details)
+     Password reset email
+     Certificate earned notification
+     Course completion email
+
+Rich text editor with variable placeholders ({student_name}, {course_name}, etc.)
+
+
+ATA KHUB KHUB IMPORTANT TASK. KONO VABE E JENO KONO KISO SKIP BA MISS NA HOY. 16 TA POINT ASE. DORKER GOY AKTA AKTA KORE POINT SES KORBA. KONO KISO CONFUSION MONE HOLE AMAKE JIGAS KORBA. TAO KONO KISO MISS BA SKIP KORA JABE NA. SOB KHULA FUNCTION KHUB E IMPORTANT. KONO FUNCTION JODI SKIP HOY TAHOLE PURO SYSTEM KAJ KORBE NA SO BE CARE FULL. SOB GULA POINT KHUB CARE FULL READ KORBA THEN SOB GULA FUNCTION APPLY KORBA. EKHANE 16 TA POINT ASE EI 16 TA POINT ER FUNCTION EMPLEMENT KORAR POR TUMI NIJE AKBAR CHECK KORBA JE SOB FUNCTION KAJ KORE KINA THEN AMARE FINAL REPORT DIBA. THEN NEXT
+
+======================================================================
+
+Step 7 — Community system
+
+"Build the community page with posts, nested replies, upvote/downvote, report, moderator controls."
+
+COMMUNITY SYSTEM DETAILS
+Any logged-in student can create a post (title + rich text + optional image)
+Any logged-in student can upvote or downvote any post or reply (one vote per user)
+Nested replies: reply to a post, and reply to a reply (max 3 levels deep)
+Report button on every post and reply → goes to admin moderation queue
+Moderator actions: pin post, hide post, delete post, warn user, ban user from community
+Community rules: stored in DB, editable from admin, shown as sidebar on community page
+Weekly featured post: admin pins one post as "featured" — shown as banner
+Post categories: admin creates categories from admin panel, students select when posting
+
+======================================================================
+
+Step 8 — Final touches
+
+"Add AdSense integration, Google Analytics, Facebook Pixel, WhatsApp floating button, sitemap.xml, robots.txt, dark mode, bilingual Bengali/English support."
+GOOGLE ADSENSE REQUIREMENTS
+The following pages are mandatory for AdSense approval — ensure they exist and have real content:
+/about — About Us (who you are, mission)
+/contact — Contact Us (form + email)
+/privacy-policy — Privacy Policy (detailed)
+/terms — Terms of Service (detailed)
+AdSense ad placements (controlled by admin panel toggle + ad unit IDs):
+Top of every blog post (before content)
+Middle of every blog post (after 3rd paragraph)
+Sidebar of blog listing and blog post
+Footer of all public pages
+Landing page (between sections, not intrusive)
+======================================================================
+Step 9 — Final touches
+
+EMAIL NOTIFICATIONS (via Resend)
+Trigger these automatically:
+On signup → welcome email
+On enrollment → enrollment confirmation with course link
+On payment success → receipt with invoice (PDF attachment generated server-side)
+On quiz pass → congratulations + certificate link
+On community reply → notify post author
+On community report resolution → notify reporter
+Password reset flow
+
+======================================================================
+
+
+ADDITIONAL FEATURES
+WhatsApp floating button: phone number set in admin settings, appears on all pages.
+Google Analytics: measurement ID set in admin SEO settings → auto-inject <Script> in layout.
+Facebook Pixel: pixel ID set in admin → auto-inject in layout.
+Sitemap.xml: auto-generated at /sitemap.xml including all courses, blog posts, custom pages.
+robots.txt: editable from admin SEO settings.
+Open Graph tags: auto-generated per page from meta settings.
+Dark mode support: system-preference based.
+Responsive design: fully mobile-first, works on all screen sizes.
+Bilingual support: Bengali + English (language toggle in header).
+Loading states: skeleton loaders on all data-fetching pages.
+Error boundaries: graceful error pages (404, 500).
+Rate limiting: on auth endpoints and payment endpoints.
+CORS + security headers: via Next.js middleware.
+
+======================================================================
+
+PROMPT END
+Build exactly as described above. Use Supabase RLS for all data security. Never expose signed URLs — generate them server-side per request. All admin routes must verify roles via middleware before rendering. Payment webhooks must verify signatures before processing. Do not use YouTube for video — only Bunny.net embed. Implement every page, role, and feature listed above. Start with the database schema and RLS policies first, then build the public pages, then student dashboard, then admin panel.
