@@ -303,7 +303,7 @@ export default function CourseDetailPage() {
                       </button>
                     </Link>
                   ) : (
-                    <Link href={user ? `/dashboard/billing` : `/signup`}>
+                    <Link href={user ? `/checkout/${course.slug}` : `/login?redirect=/checkout/${course.slug}`}>
                       <button className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-violet-500/20 flex items-center justify-center gap-2 mb-3">
                         {course.is_free ? "ফ্রিতে ভর্তি হন" : "এখনই কিনুন"}
                         <ChevronRight className="w-5 h-5" />

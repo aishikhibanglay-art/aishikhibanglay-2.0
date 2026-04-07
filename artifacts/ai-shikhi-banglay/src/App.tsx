@@ -26,6 +26,9 @@ import {
   RefundPolicyPage,
   CookiePolicyPage,
 } from "@/pages/public/PolicyPage";
+import CheckoutPage from "@/pages/public/CheckoutPage";
+import PaymentSuccessPage from "@/pages/public/PaymentSuccessPage";
+import PaymentFailPage from "@/pages/public/PaymentFailPage";
 
 // Student Dashboard
 import DashboardHome from "@/pages/dashboard/DashboardHome";
@@ -75,6 +78,11 @@ function Router() {
       <Route path="/terms" component={TermsPage} />
       <Route path="/refund-policy" component={RefundPolicyPage} />
       <Route path="/cookie-policy" component={CookiePolicyPage} />
+
+      {/* ── Payment Routes ── */}
+      <Route path="/checkout/:slug" component={CheckoutPage} />
+      <Route path="/payment/success" component={PaymentSuccessPage} />
+      <Route path="/payment/fail" component={PaymentFailPage} />
 
       {/* ── Auth Routes ── */}
       <Route path="/login" component={LoginPage} />
