@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type Request, type Response } from "express";
 import cors from "cors";
 import { Router } from "express";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -20,13 +20,6 @@ function getSupabase(): SupabaseClient {
   _supabase = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
   return _supabase;
 }
-const supabase = new Proxy({} as SupabaseClient, {
-  get(_t, prop) {
-    const c = getSupabase();
-    const v = (c as unknown as Record<string | symbol, unknown>)[prop];
-    return typeof v === "function" ? v.bind(c) : v;
-  },
-});
 
 // ─── SSLCommerz ──────────────────────────────────────────────────────────────
 const STORE_ID = process.env["SSLCOMMERZ_STORE_ID"] || "testbox";
@@ -83,25 +76,27 @@ async function sendReceiptEmail(to: string, name: string, courseName: string, am
 async function getProfile(authHeader: string | undefined) {
   if (!authHeader?.startsWith("Bearer ")) return null;
   const token = authHeader.split(" ")[1];
-  const { data: { user }, error } = await supabase.auth.getUser(token);
+  const sb = getSupabase();
+  const { data: { user }, error } = await sb.auth.getUser(token);
   if (error || !user) return null;
-  const { data: profile } = await supabase.from("profiles").select("id,name,email").eq("user_id", user.id).single();
+  const { data: profile } = await sb.from("profiles").select("id,name,email").eq("user_id", user.id).single();
   return profile as { id: string; name: string; email: string } | null;
 }
 
 // ─── Health ───────────────────────────────────────────────────────────────────
-app.get("/api/healthz", (_req, res) => res.json({ status: "ok" }));
+app.get("/api/healthz", (_req: Request, res: Response) => res.json({ status: "ok" }));
 
 // ─── Coupons ──────────────────────────────────────────────────────────────────
 const couponsRouter = Router();
 
-couponsRouter.post("/validate", async (req, res) => {
+couponsRouter.post("/validate", async (req: Request, res: Response) => {
   const { code, course_id, price_bdt } = req.body as { code: string; course_id: string; price_bdt: number };
   if (!code || !course_id || price_bdt == null) {
     return res.status(400).json({ valid: false, discount_amount: 0, final_price: price_bdt ?? 0, message: "কোড, কোর্স ID এবং মূল্য প্রয়োজন।" });
   }
   const now = new Date().toISOString();
-  const { data: coupon, error } = await supabase.from("coupons").select("*").eq("code", code.toUpperCase()).eq("is_active", true).single();
+  const sb = getSupabase();
+  const { data: coupon, error } = await sb.from("coupons").select("*").eq("code", code.toUpperCase()).eq("is_active", true).single();
   if (error || !coupon) return res.json({ valid: false, discount_amount: 0, final_price: price_bdt, message: "এই কুপন কোডটি বৈধ নয়।" });
   if (coupon.expires_at && coupon.expires_at < now) return res.json({ valid: false, discount_amount: 0, final_price: price_bdt, message: "এই কুপন কোডের মেয়াদ শেষ হয়ে গেছে।" });
   if (coupon.max_uses != null && coupon.used_count >= coupon.max_uses) return res.json({ valid: false, discount_amount: 0, final_price: price_bdt, message: "এই কুপনের ব্যবহারসীমা শেষ হয়ে গেছে।" });
@@ -116,24 +111,25 @@ app.use("/api/coupons", couponsRouter);
 // ─── Payment ──────────────────────────────────────────────────────────────────
 const paymentRouter = Router();
 
-paymentRouter.post("/sslcommerz/init", async (req, res) => {
+paymentRouter.post("/sslcommerz/init", async (req: Request, res: Response) => {
   try {
     const profile = await getProfile(req.headers.authorization);
     if (!profile) return res.status(401).json({ error: "Unauthorized. Please login first." });
     const { course_id, coupon_code } = req.body as { course_id: string; coupon_code?: string };
     if (!course_id) return res.status(400).json({ error: "course_id is required" });
-    const { data: course, error: courseErr } = await supabase.from("courses").select("id,title,price_bdt,price_usd,is_free,is_published,slug").eq("id", course_id).eq("is_published", true).single();
+    const sb = getSupabase();
+    const { data: course, error: courseErr } = await sb.from("courses").select("id,title,price_bdt,price_usd,is_free,is_published,slug").eq("id", course_id).eq("is_published", true).single();
     if (courseErr || !course) return res.status(404).json({ error: "কোর্সটি পাওয়া যায়নি।" });
-    const { data: existing } = await supabase.from("enrollments").select("id").eq("profile_id", profile.id).eq("course_id", course_id).eq("status", "active").single();
+    const { data: existing } = await sb.from("enrollments").select("id").eq("profile_id", profile.id).eq("course_id", course_id).eq("status", "active").single();
     if (existing) return res.status(409).json({ error: "আপনি ইতিমধ্যে এই কোর্সে ভর্তি আছেন।" });
     if (course.is_free) {
-      await supabase.from("enrollments").upsert({ profile_id: profile.id, course_id, status: "active", enrolled_at: new Date().toISOString() }, { onConflict: "profile_id,course_id" });
+      await sb.from("enrollments").upsert({ profile_id: profile.id, course_id, status: "active", enrolled_at: new Date().toISOString() }, { onConflict: "profile_id,course_id" });
       return res.json({ type: "free", redirect: `${APP_URL}/dashboard` });
     }
     let finalPrice = course.price_bdt;
     let couponId: string | null = null;
     if (coupon_code) {
-      const { data: coupon } = await supabase.from("coupons").select("*").eq("code", coupon_code.toUpperCase()).eq("is_active", true).single();
+      const { data: coupon } = await sb.from("coupons").select("*").eq("code", coupon_code.toUpperCase()).eq("is_active", true).single();
       if (coupon) {
         const disc = coupon.discount_type === "percentage" ? Math.round(finalPrice * coupon.discount_value / 100) : Math.min(coupon.discount_value, finalPrice);
         finalPrice = Math.max(0, finalPrice - disc);
@@ -141,7 +137,7 @@ paymentRouter.post("/sslcommerz/init", async (req, res) => {
       }
     }
     const tran_id = `ORDER_${Date.now()}_${profile.id.slice(0, 8)}`;
-    await supabase.from("orders").insert({ profile_id: profile.id, course_id, tran_id, amount_bdt: finalPrice, coupon_id: couponId, status: "pending" });
+    await sb.from("orders").insert({ profile_id: profile.id, course_id, tran_id, amount_bdt: finalPrice, coupon_id: couponId, status: "pending" });
     const sslRes = await initSSLCommerz({
       total_amount: String(finalPrice),
       currency: "BDT",
@@ -174,23 +170,24 @@ paymentRouter.post("/sslcommerz/init", async (req, res) => {
   }
 });
 
-paymentRouter.post("/sslcommerz/success", async (req, res) => {
+paymentRouter.post("/sslcommerz/success", async (req: Request, res: Response) => {
   try {
     const { tran_id, val_id, status } = req.body as { tran_id: string; val_id: string; status: string };
     if (status !== "VALID" && status !== "VALIDATED") return res.redirect(`${APP_URL}/payment/fail?reason=invalid_status`);
     const validation = await validateSSLCommerz(val_id);
     if (validation.status !== "VALID" && validation.status !== "VALIDATED") return res.redirect(`${APP_URL}/payment/fail?reason=validation_failed`);
-    const { data: order } = await supabase.from("orders").select("*").eq("tran_id", tran_id).single();
+    const sb = getSupabase();
+    const { data: order } = await sb.from("orders").select("*").eq("tran_id", tran_id).single();
     if (!order) return res.redirect(`${APP_URL}/payment/fail?reason=order_not_found`);
     if (order.status === "success") return res.redirect(`${APP_URL}/payment/success?order_id=${order.id}`);
-    await supabase.from("orders").update({ status: "success", val_id, paid_at: new Date().toISOString() }).eq("tran_id", tran_id);
-    await supabase.from("enrollments").upsert({ profile_id: order.profile_id, course_id: order.course_id, status: "active", enrolled_at: new Date().toISOString(), order_id: order.id }, { onConflict: "profile_id,course_id" });
+    await sb.from("orders").update({ status: "success", val_id, paid_at: new Date().toISOString() }).eq("tran_id", tran_id);
+    await sb.from("enrollments").upsert({ profile_id: order.profile_id, course_id: order.course_id, status: "active", enrolled_at: new Date().toISOString(), order_id: order.id }, { onConflict: "profile_id,course_id" });
     if (order.coupon_id) {
-      const { data: coupon } = await supabase.from("coupons").select("used_count").eq("id", order.coupon_id).single();
-      if (coupon) await supabase.from("coupons").update({ used_count: (coupon.used_count || 0) + 1 }).eq("id", order.coupon_id);
+      const { data: coupon } = await sb.from("coupons").select("used_count").eq("id", order.coupon_id).single();
+      if (coupon) await sb.from("coupons").update({ used_count: (coupon.used_count || 0) + 1 }).eq("id", order.coupon_id);
     }
-    const { data: profile } = await supabase.from("profiles").select("name,email").eq("id", order.profile_id).single();
-    const { data: course } = await supabase.from("courses").select("title").eq("id", order.course_id).single();
+    const { data: profile } = await sb.from("profiles").select("name,email").eq("id", order.profile_id).single();
+    const { data: course } = await sb.from("courses").select("title").eq("id", order.course_id).single();
     if (profile && course) await sendReceiptEmail(profile.email, profile.name, course.title, order.amount_bdt, order.id);
     return res.redirect(`${APP_URL}/payment/success?order_id=${order.id}`);
   } catch (err) {
@@ -199,28 +196,29 @@ paymentRouter.post("/sslcommerz/success", async (req, res) => {
   }
 });
 
-paymentRouter.post("/sslcommerz/fail", async (req, res) => {
+paymentRouter.post("/sslcommerz/fail", async (req: Request, res: Response) => {
   const { tran_id } = req.body as { tran_id: string };
-  if (tran_id) await supabase.from("orders").update({ status: "failed" }).eq("tran_id", tran_id).eq("status", "pending");
+  if (tran_id) await getSupabase().from("orders").update({ status: "failed" }).eq("tran_id", tran_id).eq("status", "pending");
   return res.redirect(`${APP_URL}/payment/fail?reason=payment_failed`);
 });
 
-paymentRouter.post("/sslcommerz/cancel", async (req, res) => {
+paymentRouter.post("/sslcommerz/cancel", async (req: Request, res: Response) => {
   const { tran_id } = req.body as { tran_id: string };
-  if (tran_id) await supabase.from("orders").update({ status: "failed" }).eq("tran_id", tran_id).eq("status", "pending");
+  if (tran_id) await getSupabase().from("orders").update({ status: "failed" }).eq("tran_id", tran_id).eq("status", "pending");
   return res.redirect(`${APP_URL}/payment/fail?reason=cancelled`);
 });
 
-paymentRouter.post("/sslcommerz/ipn", async (req, res) => {
+paymentRouter.post("/sslcommerz/ipn", async (req: Request, res: Response) => {
   try {
     const { tran_id, val_id, status } = req.body as { tran_id: string; val_id: string; status: string };
     if ((status === "VALID" || status === "VALIDATED") && tran_id && val_id) {
       const validation = await validateSSLCommerz(val_id);
       if (validation.status === "VALID" || validation.status === "VALIDATED") {
-        const { data: order } = await supabase.from("orders").select("*").eq("tran_id", tran_id).single();
+        const sb = getSupabase();
+        const { data: order } = await sb.from("orders").select("*").eq("tran_id", tran_id).single();
         if (order && order.status !== "success") {
-          await supabase.from("orders").update({ status: "success", val_id, paid_at: new Date().toISOString() }).eq("tran_id", tran_id);
-          await supabase.from("enrollments").upsert({ profile_id: order.profile_id, course_id: order.course_id, status: "active", enrolled_at: new Date().toISOString(), order_id: order.id }, { onConflict: "profile_id,course_id" });
+          await sb.from("orders").update({ status: "success", val_id, paid_at: new Date().toISOString() }).eq("tran_id", tran_id);
+          await sb.from("enrollments").upsert({ profile_id: order.profile_id, course_id: order.course_id, status: "active", enrolled_at: new Date().toISOString(), order_id: order.id }, { onConflict: "profile_id,course_id" });
         }
       }
     }
