@@ -1,0 +1,68 @@
+🗂️ প্রজেক্ট সম্পর্কে
+প্রজেক্টের নাম: Digital Course Selling Platform
+টার্গেট: প্রথমে Bangladesh, পরে Global
+ভাষা: Bengali + English (bilingual)
+Deploy হবে: Vercel + Supabase
+
+⚙️ Tech Stack
+LayerToolকেনFrontendNext.js 14 App RouterVercel-এ সহজে deployUITailwind CSS + shadcn/uiFast, responsiveDatabaseSupabase PostgreSQLFree tier, RLS supportAuthSupabase AuthEmail + Google + FacebookStorageSupabase StorageFile, image, PDF storeVideoBunny.netYouTube ব্যবহার করবো নাPayment BDSSLCommerzbKash, Nagad, cardPayment GlobalStripeCard, Apple Pay, Google PayEmailResend.comTransactional emailDeployVercelFree tierCDN/SecurityCloudflare FreeSpeed + DDoS protection
+
+👥 User Roles (৪টা Role)
+Roleকী করতে পারবেsuper_adminসব কিছু, role change করতে পারবেadminসব CRUD, course/student/blog/payment/settings managemoderatorশুধু community manage করতে পারবেstudentনিজের courses, community, profile দেখতে ও ব্যবহার করতে পারবে
+
+📄 সব Pages এর লিস্ট
+Public Pages (login ছাড়া)
+
+/ — Landing Page
+/courses — Course Listing
+/courses/[slug] — Single Course Detail
+/blog — Blog Listing
+/blog/[slug] — Single Blog Post
+/community — Community Public View
+/about — About Us
+/contact — Contact
+/privacy-policy — Privacy Policy
+/terms — Terms & Conditions
+/refund-policy — Refund Policy
+/login — Login
+/signup — Signup
+/forgot-password — Forgot Password
+/reset-password — Reset Password
+
+Student Pages (login লাগবে)
+
+/dashboard — Student Dashboard
+/dashboard/courses — My Courses
+/dashboard/courses/[id]/learn — Course Player
+/dashboard/courses/[id]/quiz — Quiz
+/dashboard/certificates — Certificates
+/dashboard/community — Community Full Access
+/dashboard/profile — Profile Settings
+/dashboard/billing — Billing History
+
+Admin Pages (admin/super_admin লাগবে)
+
+/admin — Admin Dashboard
+/admin/courses — Course Manager
+/admin/courses/[id] — Course Create/Edit
+/admin/students — Student Manager
+/admin/blog — Blog Manager
+/admin/blog/[id] — Blog Post Create/Edit
+/admin/pages — Custom Page Builder
+/admin/community — Community Moderation
+/admin/payments — Payment & Orders
+/admin/coupons — Coupon Manager
+/admin/media — Media Library
+/admin/seo — SEO Settings
+/admin/adsense — AdSense Settings
+/admin/settings — Site Settings
+/admin/roles — Role Manager (super_admin only)
+/admin/emails — Email Templates Manager
+
+
+🗄️ Database Tables (Supabase)
+profiles, courses, sections, lessons, enrollments, progress,
+orders, coupons, certificates, quiz_questions, quiz_attempts,
+blog_posts, blog_categories, community_posts, community_replies,
+community_votes, community_reports, community_rules, custom_pages,
+site_settings, notifications, lesson_notes, lesson_qa
