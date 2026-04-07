@@ -7,7 +7,7 @@ import {
   Bell, Shield, Tag, BarChart3, Globe
 } from "lucide-react";
 
-const navGroups = [
+const navGroupsConfig = [
   {
     label: "প্রধান",
     items: [
@@ -18,7 +18,7 @@ const navGroups = [
   {
     label: "ব্যবস্থাপনা",
     items: [
-      { href: "/admin/users", icon: Users, label: "ব্যবহারকারী" },
+      { href: "/admin/users", icon: Users, label: "ব্যবহারকারী", superAdminOnly: true },
       { href: "/admin/courses", icon: BookOpen, label: "কোর্স" },
       { href: "/admin/categories", icon: Tag, label: "ক্যাটাগরি" },
       { href: "/admin/payments", icon: CreditCard, label: "পেমেন্ট" },
@@ -45,6 +45,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [location] = useLocation();
   const { profile, signOut } = useAuth();
+
+  const isSuperAdmin = profile?.role === "super_admin";
+
+  const navGroups = navGroupsConfig.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => !("superAdminOnly" in item && item.superAdminOnly && !isSuperAdmin)),
+  }));
 
   const isActive = (href: string, exact?: boolean) => {
     if (exact) return location === href;

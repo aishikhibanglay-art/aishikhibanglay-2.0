@@ -41,6 +41,7 @@ const queryClient = new QueryClient({
 const ALL_ROLES = ["student", "admin", "super_admin", "moderator"] as const;
 const ADMIN_ROLES = ["admin", "super_admin"] as const;
 const MOD_ROLES = ["admin", "super_admin", "moderator"] as const;
+const SUPER_ADMIN_ONLY = ["super_admin"] as const;
 
 function Router() {
   return (
@@ -83,7 +84,7 @@ function Router() {
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><AdminDashboard /></ProtectedRoute>}
       </Route>
       <Route path="/admin/users">
-        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><UsersManagement /></ProtectedRoute>}
+        {() => <ProtectedRoute allowedRoles={[...SUPER_ADMIN_ONLY]}><UsersManagement /></ProtectedRoute>}
       </Route>
       <Route path="/admin/courses">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CoursesManagement /></ProtectedRoute>}
