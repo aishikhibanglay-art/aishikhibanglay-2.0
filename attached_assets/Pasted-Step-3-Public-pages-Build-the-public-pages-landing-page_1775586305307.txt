@@ -1,0 +1,89 @@
+Step 3 — Public pages
+"Build the public pages — landing page, course listing, single course detail, blog listing, single blog post, about, contact, privacy policy, terms, refund policy pages, cookie policy."
+
+POINT 1:
+Landing Page (/):
+Hero section with headline, subheadline, CTA button (enroll / browse courses)
+Featured courses section (show top 4–6 courses dynamically from DB)
+Instructor/about section
+Student testimonials section
+Stats section (total students, courses, ratings)
+FAQ section
+Blog preview section (latest 3 posts)
+Community preview section
+Footer with social links, nav links, newsletter signup
+
+POINT 2:
+Course Listing Page (/courses):
+Grid/list view toggle
+Filter by: category, price (free/paid), type (video/PDF/template), rating
+Search bar (full-text search)
+Pagination or infinite scroll
+Each course card shows: thumbnail, title, instructor, price, rating, student count, type badge
+
+POINT 3:
+Single Course Detail Page (/courses/[slug])
+Course title, description, trailer video (free preview)
+Curriculum accordion (section > lessons, locked vs free preview)
+Instructor bio
+Student reviews & ratings (with star rating input)
+Price + enroll button
+Coupon code input field
+What you'll learn section
+Requirements section
+Certificate info
+Social share buttons
+
+POINT 4:
+Blog Listing Page (/blog)
+Cards with thumbnail, title, excerpt, category, date, read time
+Category filter tabs
+Search
+Pagination
+Sidebar: recent posts, popular posts, categories
+
+POINT 5:
+Single Blog Post Page (/blog/[slug])
+Full rich text content
+Author info
+Published date, read time
+Social share (Facebook, Twitter/X, LinkedIn, WhatsApp)
+Related posts
+Comment section (optional, v2)
+AdSense ad placements (header, mid-content, sidebar, footer)
+
+POINT 6:
+About Us Page (/about)
+Fully editable from admin panel
+Rich text + image content
+
+POINT 7:
+Contact Page (/contact)
+Contact form (name, email, message) — sends to admin email via Resend
+Social links
+WhatsApp direct link
+
+POINT 8:
+Privacy Policy Page (/privacy-policy)
+Editable from admin (rich text)
+
+POINT 9:
+Terms & Conditions Page (/terms)
+Editable from admin
+
+POINT 10:
+Refund Policy Page (/refund-policy)
+Editable from admin
+
+POINT 11:
+Community Public View Page (/community)
+Show recent posts publicly (read-only)
+CTA to login/signup to participate
+Community rules visible
+
+
+POINT 12:
+Cookie Policy Page
+Editable from admin
+
+STEP 3 A 12 TA POINT ACHE. AKTA POINT O JENO MISS NA HOY. R KONO POINT ER KONO KISO JENO SKIP NA HOY. EKDOM VALO KORE SOB GULA POINT PORBA THEN BUJHBA THEN EMPLEMENT KORBA.

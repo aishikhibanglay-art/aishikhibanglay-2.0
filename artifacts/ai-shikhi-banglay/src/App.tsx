@@ -11,6 +11,22 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 import AuthCallbackPage from "@/pages/auth/AuthCallbackPage";
 
+// Public Pages
+import HomePage from "@/pages/public/HomePage";
+import CoursesPage from "@/pages/public/CoursesPage";
+import CourseDetailPage from "@/pages/public/CourseDetailPage";
+import BlogPage from "@/pages/public/BlogPage";
+import BlogPostPage from "@/pages/public/BlogPostPage";
+import AboutPage from "@/pages/public/AboutPage";
+import ContactPage from "@/pages/public/ContactPage";
+import CommunityPublicPage from "@/pages/public/CommunityPublicPage";
+import {
+  PrivacyPolicyPage,
+  TermsPage,
+  RefundPolicyPage,
+  CookiePolicyPage,
+} from "@/pages/public/PolicyPage";
+
 // Student Dashboard
 import DashboardHome from "@/pages/dashboard/DashboardHome";
 import MyCourses from "@/pages/dashboard/MyCourses";
@@ -46,7 +62,21 @@ const SUPER_ADMIN_ONLY = ["super_admin"] as const;
 function Router() {
   return (
     <Switch>
-      {/* Public auth routes */}
+      {/* ── Public Routes ── */}
+      <Route path="/" component={HomePage} />
+      <Route path="/courses" component={CoursesPage} />
+      <Route path="/courses/:slug" component={CourseDetailPage} />
+      <Route path="/blog" component={BlogPage} />
+      <Route path="/blog/:slug" component={BlogPostPage} />
+      <Route path="/about" component={AboutPage} />
+      <Route path="/contact" component={ContactPage} />
+      <Route path="/community" component={CommunityPublicPage} />
+      <Route path="/privacy-policy" component={PrivacyPolicyPage} />
+      <Route path="/terms" component={TermsPage} />
+      <Route path="/refund-policy" component={RefundPolicyPage} />
+      <Route path="/cookie-policy" component={CookiePolicyPage} />
+
+      {/* ── Auth Routes ── */}
       <Route path="/login" component={LoginPage} />
       <Route path="/signup" component={SignupPage} />
       <Route path="/forgot-password" component={ForgotPasswordPage} />
@@ -98,9 +128,6 @@ function Router() {
       <Route path="/admin/settings">
         {() => <ProtectedRoute allowedRoles={["super_admin"]}><SiteSettings /></ProtectedRoute>}
       </Route>
-
-      {/* Root → login */}
-      <Route path="/" component={LoginPage} />
 
       <Route component={NotFound} />
     </Switch>
