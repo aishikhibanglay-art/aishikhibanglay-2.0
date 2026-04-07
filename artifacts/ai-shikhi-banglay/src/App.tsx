@@ -57,6 +57,7 @@ import CouponsPage from "@/pages/admin/CouponsPage";
 import EnrollmentsPage from "@/pages/admin/EnrollmentsPage";
 import ReviewsPage from "@/pages/admin/ReviewsPage";
 import NotificationsPage from "@/pages/admin/NotificationsPage";
+import HomepageEditor from "@/pages/admin/HomepageEditor";
 
 // 404
 import NotFound from "@/pages/not-found";
@@ -178,6 +179,9 @@ function Router() {
       </Route>
       <Route path="/admin/email-templates">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><EmailTemplates /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/homepage">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><HomepageEditor /></ProtectedRoute>}
       </Route>
       <Route path="/admin/settings">
         {() => <ProtectedRoute allowedRoles={["super_admin"]}><SiteSettings /></ProtectedRoute>}

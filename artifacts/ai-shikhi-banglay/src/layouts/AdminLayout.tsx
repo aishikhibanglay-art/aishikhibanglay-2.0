@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Users, BookOpen, CreditCard, FileText,
   MessageSquare, Settings, Mail, Menu, X, LogOut, ChevronRight,
-  Bell, Shield, Tag, BarChart3, Ticket, GraduationCap, Star, Send
+  Bell, Shield, Tag, BarChart3, Ticket, GraduationCap, Star, Send, Home
 } from "lucide-react";
 
 type NavRole = "super_admin" | "admin" | "moderator";
@@ -31,6 +31,7 @@ const navGroupsConfig = [
   {
     label: "কন্টেন্ট",
     items: [
+      { href: "/admin/homepage", icon: Home, label: "হোমপেজ", roles: ["admin", "super_admin"] as NavRole[] },
       { href: "/admin/blog", icon: FileText, label: "ব্লগ", roles: ["admin", "super_admin"] as NavRole[] },
       { href: "/admin/reviews", icon: Star, label: "রিভিউ", roles: ["admin", "super_admin"] as NavRole[] },
       { href: "/admin/community", icon: MessageSquare, label: "কমিউনিটি", roles: ["admin", "super_admin", "moderator"] as NavRole[] },
