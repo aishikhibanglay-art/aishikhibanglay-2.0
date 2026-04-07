@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "AI শিখি বাংলায়"
+version = "1.0.0"
+id = "artifacts/ai-shikhi-banglay"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25345
+
+[services.development]
+run = "pnpm --filter @workspace/ai-shikhi-banglay run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ai-shikhi-banglay", "run", "build" ]
+publicDir = "artifacts/ai-shikhi-banglay/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25345"
+BASE_PATH = "/"
