@@ -53,7 +53,10 @@ import CategoriesPage from "@/pages/admin/CategoriesPage";
 import BlogManagement from "@/pages/admin/BlogManagement";
 import BlogEditor from "@/pages/admin/BlogEditor";
 import EmailTemplates from "@/pages/admin/EmailTemplates";
-import CustomPages from "@/pages/admin/CustomPages";
+import CouponsPage from "@/pages/admin/CouponsPage";
+import EnrollmentsPage from "@/pages/admin/EnrollmentsPage";
+import ReviewsPage from "@/pages/admin/ReviewsPage";
+import NotificationsPage from "@/pages/admin/NotificationsPage";
 
 // 404
 import NotFound from "@/pages/not-found";
@@ -146,8 +149,14 @@ function Router() {
       <Route path="/admin/categories">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CategoriesPage /></ProtectedRoute>}
       </Route>
+      <Route path="/admin/enrollments">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><EnrollmentsPage /></ProtectedRoute>}
+      </Route>
       <Route path="/admin/payments">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><PaymentsPage /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/coupons">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CouponsPage /></ProtectedRoute>}
       </Route>
       <Route path="/admin/blog/new">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><BlogEditor /></ProtectedRoute>}
@@ -158,11 +167,14 @@ function Router() {
       <Route path="/admin/blog">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><BlogManagement /></ProtectedRoute>}
       </Route>
+      <Route path="/admin/reviews">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><ReviewsPage /></ProtectedRoute>}
+      </Route>
       <Route path="/admin/community">
         {() => <ProtectedRoute allowedRoles={[...MOD_ROLES]}><CommunityModeration /></ProtectedRoute>}
       </Route>
-      <Route path="/admin/pages">
-        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CustomPages /></ProtectedRoute>}
+      <Route path="/admin/notifications">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><NotificationsPage /></ProtectedRoute>}
       </Route>
       <Route path="/admin/email-templates">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><EmailTemplates /></ProtectedRoute>}

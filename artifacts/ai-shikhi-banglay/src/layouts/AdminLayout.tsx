@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Users, BookOpen, CreditCard, FileText,
   MessageSquare, Settings, Mail, Menu, X, LogOut, ChevronRight,
-  Bell, Shield, Tag, BarChart3, Globe
+  Bell, Shield, Tag, BarChart3, Ticket, GraduationCap, Star, Send
 } from "lucide-react";
 
 type NavRole = "super_admin" | "admin" | "moderator";
@@ -23,20 +23,23 @@ const navGroupsConfig = [
       { href: "/admin/users", icon: Users, label: "ব্যবহারকারী", roles: ["super_admin"] as NavRole[] },
       { href: "/admin/courses", icon: BookOpen, label: "কোর্স", roles: ["admin", "super_admin"] as NavRole[] },
       { href: "/admin/categories", icon: Tag, label: "ক্যাটাগরি", roles: ["admin", "super_admin"] as NavRole[] },
+      { href: "/admin/enrollments", icon: GraduationCap, label: "নথিভুক্তি", roles: ["admin", "super_admin"] as NavRole[] },
       { href: "/admin/payments", icon: CreditCard, label: "পেমেন্ট", roles: ["admin", "super_admin"] as NavRole[] },
+      { href: "/admin/coupons", icon: Ticket, label: "কুপন", roles: ["admin", "super_admin"] as NavRole[] },
     ],
   },
   {
     label: "কন্টেন্ট",
     items: [
       { href: "/admin/blog", icon: FileText, label: "ব্লগ", roles: ["admin", "super_admin"] as NavRole[] },
+      { href: "/admin/reviews", icon: Star, label: "রিভিউ", roles: ["admin", "super_admin"] as NavRole[] },
       { href: "/admin/community", icon: MessageSquare, label: "কমিউনিটি", roles: ["admin", "super_admin", "moderator"] as NavRole[] },
-      { href: "/admin/pages", icon: Globe, label: "কাস্টম পেজ", roles: ["admin", "super_admin"] as NavRole[] },
     ],
   },
   {
     label: "সিস্টেম",
     items: [
+      { href: "/admin/notifications", icon: Send, label: "নোটিফিকেশন", roles: ["admin", "super_admin"] as NavRole[] },
       { href: "/admin/email-templates", icon: Mail, label: "ইমেইল টেমপ্লেট", roles: ["admin", "super_admin"] as NavRole[] },
       { href: "/admin/settings", icon: Settings, label: "সেটিংস", roles: ["super_admin"] as NavRole[] },
     ],
@@ -185,10 +188,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button className="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full" />
-            </button>
+            <Link href="/admin/notifications">
+              <button className="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
+                <Bell className="w-4 h-4" />
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full" />
+              </button>
+            </Link>
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-white font-bold text-xs">
               {profile?.name?.[0]?.toUpperCase() || "A"}
             </div>
