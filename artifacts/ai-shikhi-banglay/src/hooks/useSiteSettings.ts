@@ -44,6 +44,40 @@ const DEFAULTS: SiteSettings = {
   adsense_footer_id: null,
 };
 
+// Parse a DB value: could be JSON string or raw string
+function parseVal(raw: unknown): unknown {
+  if (raw === undefined || raw === null) return null;
+  if (typeof raw !== "string") return raw;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return raw;
+  }
+}
+
+// Safely get a string or null (never returns "null" string)
+function str(v: unknown, fallback: string): string {
+  const parsed = parseVal(v);
+  if (parsed === null || parsed === undefined || parsed === "null") return fallback;
+  return String(parsed);
+}
+function strOrNull(v: unknown): string | null {
+  const parsed = parseVal(v);
+  if (parsed === null || parsed === undefined || parsed === "null") return null;
+  const s = String(parsed);
+  if (s === "null" || s === "undefined" || s === "") return null;
+  return s;
+}
+function bool(v: unknown): boolean {
+  const parsed = parseVal(v);
+  return parsed === true || parsed === "true" || parsed === 1;
+}
+function obj<T extends object>(v: unknown, fallback: T): T {
+  const parsed = parseVal(v);
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return parsed as T;
+  return fallback;
+}
+
 export function useSiteSettings() {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULTS);
   const [loading, setLoading] = useState(true);
@@ -51,28 +85,26 @@ export function useSiteSettings() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const { data } = await supabase
-          .from("site_settings")
-          .select("key, value");
+        const { data } = await supabase.from("site_settings").select("key, value");
         if (data) {
           const map: Record<string, unknown> = {};
           data.forEach((row) => { map[row.key] = row.value; });
           setSettings({
-            site_name: (map.site_name as string) || DEFAULTS.site_name,
-            site_tagline: (map.site_tagline as string) || DEFAULTS.site_tagline,
-            site_logo_url: (map.site_logo_url as string | null) ?? null,
-            contact_email: (map.contact_email as string) || DEFAULTS.contact_email,
-            contact_phone: (map.contact_phone as string | null) ?? null,
-            whatsapp_number: (map.whatsapp_number as string | null) ?? null,
-            whatsapp_button_enabled: Boolean(map.whatsapp_button_enabled),
-            social_links: (map.social_links as SiteSettings["social_links"]) || {},
-            footer_copyright: (map.footer_copyright as string) || DEFAULTS.footer_copyright,
-            adsense_enabled: Boolean(map.adsense_enabled),
-            adsense_publisher_id: (map.adsense_publisher_id as string | null) ?? null,
-            adsense_header_id: (map.adsense_header_id as string | null) ?? null,
-            adsense_mid_id: (map.adsense_mid_id as string | null) ?? null,
-            adsense_sidebar_id: (map.adsense_sidebar_id as string | null) ?? null,
-            adsense_footer_id: (map.adsense_footer_id as string | null) ?? null,
+            site_name: str(map.site_name, DEFAULTS.site_name),
+            site_tagline: str(map.site_tagline, DEFAULTS.site_tagline),
+            site_logo_url: strOrNull(map.site_logo_url),
+            contact_email: str(map.contact_email, DEFAULTS.contact_email),
+            contact_phone: strOrNull(map.contact_phone),
+            whatsapp_number: strOrNull(map.whatsapp_number),
+            whatsapp_button_enabled: bool(map.whatsapp_button_enabled),
+            social_links: obj(map.social_links, {}),
+            footer_copyright: str(map.footer_copyright, DEFAULTS.footer_copyright),
+            adsense_enabled: bool(map.adsense_enabled),
+            adsense_publisher_id: strOrNull(map.adsense_publisher_id),
+            adsense_header_id: strOrNull(map.adsense_header_id),
+            adsense_mid_id: strOrNull(map.adsense_mid_id),
+            adsense_sidebar_id: strOrNull(map.adsense_sidebar_id),
+            adsense_footer_id: strOrNull(map.adsense_footer_id),
           });
         }
       } catch {
