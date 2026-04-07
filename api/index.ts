@@ -7,7 +7,7 @@ import { Resend } from "resend";
 
 const app = express();
 
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: ["https://www.aishikhibanglay.com", "https://aishikhibanglay.com", /\.vercel\.app$/] }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -33,7 +33,7 @@ const APP_URL =
   process.env["APP_URL"] ||
   (process.env["VERCEL_URL"]
     ? `https://${process.env["VERCEL_URL"]}`
-    : "https://aishikhibanglay.com");
+    : "https://www.aishikhibanglay.com");
 
 async function initSSLCommerz(params: Record<string, string>) {
   const url = `${SSLCZ_BASE}/gwprocess/v4/api.php`;
