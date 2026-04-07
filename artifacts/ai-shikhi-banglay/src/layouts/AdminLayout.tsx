@@ -7,36 +7,38 @@ import {
   Bell, Shield, Tag, BarChart3, Globe
 } from "lucide-react";
 
+type NavRole = "super_admin" | "admin" | "moderator";
+
 const navGroupsConfig = [
   {
     label: "প্রধান",
     items: [
-      { href: "/admin", icon: LayoutDashboard, label: "ড্যাশবোর্ড", exact: true },
-      { href: "/admin/analytics", icon: BarChart3, label: "অ্যানালিটিক্স" },
+      { href: "/admin", icon: LayoutDashboard, label: "ড্যাশবোর্ড", exact: true, roles: ["admin", "super_admin"] as NavRole[] },
+      { href: "/admin/analytics", icon: BarChart3, label: "অ্যানালিটিক্স", roles: ["admin", "super_admin"] as NavRole[] },
     ],
   },
   {
     label: "ব্যবস্থাপনা",
     items: [
-      { href: "/admin/users", icon: Users, label: "ব্যবহারকারী", superAdminOnly: true },
-      { href: "/admin/courses", icon: BookOpen, label: "কোর্স" },
-      { href: "/admin/categories", icon: Tag, label: "ক্যাটাগরি" },
-      { href: "/admin/payments", icon: CreditCard, label: "পেমেন্ট" },
+      { href: "/admin/users", icon: Users, label: "ব্যবহারকারী", roles: ["super_admin"] as NavRole[] },
+      { href: "/admin/courses", icon: BookOpen, label: "কোর্স", roles: ["admin", "super_admin"] as NavRole[] },
+      { href: "/admin/categories", icon: Tag, label: "ক্যাটাগরি", roles: ["admin", "super_admin"] as NavRole[] },
+      { href: "/admin/payments", icon: CreditCard, label: "পেমেন্ট", roles: ["admin", "super_admin"] as NavRole[] },
     ],
   },
   {
     label: "কন্টেন্ট",
     items: [
-      { href: "/admin/blog", icon: FileText, label: "ব্লগ" },
-      { href: "/admin/community", icon: MessageSquare, label: "কমিউনিটি" },
-      { href: "/admin/pages", icon: Globe, label: "কাস্টম পেজ" },
+      { href: "/admin/blog", icon: FileText, label: "ব্লগ", roles: ["admin", "super_admin"] as NavRole[] },
+      { href: "/admin/community", icon: MessageSquare, label: "কমিউনিটি", roles: ["admin", "super_admin", "moderator"] as NavRole[] },
+      { href: "/admin/pages", icon: Globe, label: "কাস্টম পেজ", roles: ["admin", "super_admin"] as NavRole[] },
     ],
   },
   {
     label: "সিস্টেম",
     items: [
-      { href: "/admin/email-templates", icon: Mail, label: "ইমেইল টেমপ্লেট" },
-      { href: "/admin/settings", icon: Settings, label: "সেটিংস" },
+      { href: "/admin/email-templates", icon: Mail, label: "ইমেইল টেমপ্লেট", roles: ["admin", "super_admin"] as NavRole[] },
+      { href: "/admin/settings", icon: Settings, label: "সেটিংস", roles: ["super_admin"] as NavRole[] },
     ],
   },
 ];
@@ -46,12 +48,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [location] = useLocation();
   const { profile, signOut } = useAuth();
 
-  const isSuperAdmin = profile?.role === "super_admin";
+  const userRole = profile?.role as NavRole | undefined;
 
-  const navGroups = navGroupsConfig.map((group) => ({
-    ...group,
-    items: group.items.filter((item) => !("superAdminOnly" in item && item.superAdminOnly && !isSuperAdmin)),
-  }));
+  const navGroups = navGroupsConfig
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) =>
+        userRole && item.roles.includes(userRole)
+      ),
+    }))
+    .filter((group) => group.items.length > 0);
 
   const isActive = (href: string, exact?: boolean) => {
     if (exact) return location === href;
