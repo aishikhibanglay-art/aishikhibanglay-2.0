@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -31,16 +31,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const isMounted = useRef(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
 
-    if (!error && data) {
-      setProfile(data as Profile);
+      if (!error && data && isMounted.current) {
+        setProfile(data as Profile);
+      }
+    } catch {
+      // profile fetch failed silently — user still logged in
     }
   };
 
@@ -49,30 +54,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    isMounted.current = true;
+
+    // Step 1: get current session immediately — always resolves quickly
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!isMounted.current) return;
+
       setSession(session);
       setUser(session?.user ?? null);
+
       if (session?.user) {
-        fetchProfile(session.user.id).finally(() => setLoading(false));
-      } else {
-        setLoading(false);
+        // Fetch profile in background — don't block loading on it
+        fetchProfile(session.user.id);
       }
+
+      // loading = false immediately after session check — no waiting for profile
+      setLoading(false);
+    }).catch(() => {
+      if (isMounted.current) setLoading(false);
     });
 
+    // Step 2: listen for auth state changes (login, logout, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
+        if (!isMounted.current) return;
+
         setSession(session);
         setUser(session?.user ?? null);
+
         if (session?.user) {
-          await fetchProfile(session.user.id);
+          fetchProfile(session.user.id);
         } else {
           setProfile(null);
         }
+
+        // Ensure loading is cleared if it wasn't already
         setLoading(false);
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted.current = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
@@ -85,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user, session, profile, role: profile?.role ?? null,
-      loading, signOut, refreshProfile
+      loading, signOut, refreshProfile,
     }}>
       {children}
     </AuthContext.Provider>
