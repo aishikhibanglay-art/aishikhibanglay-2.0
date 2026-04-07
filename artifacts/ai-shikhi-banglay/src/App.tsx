@@ -44,9 +44,16 @@ import BillingHistory from "@/pages/dashboard/BillingHistory";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import UsersManagement from "@/pages/admin/UsersManagement";
 import CoursesManagement from "@/pages/admin/CoursesManagement";
+import CourseEditor from "@/pages/admin/CourseEditor";
 import PaymentsPage from "@/pages/admin/PaymentsPage";
 import CommunityModeration from "@/pages/admin/CommunityModeration";
 import SiteSettings from "@/pages/admin/SiteSettings";
+import AnalyticsPage from "@/pages/admin/AnalyticsPage";
+import CategoriesPage from "@/pages/admin/CategoriesPage";
+import BlogManagement from "@/pages/admin/BlogManagement";
+import BlogEditor from "@/pages/admin/BlogEditor";
+import EmailTemplates from "@/pages/admin/EmailTemplates";
+import CustomPages from "@/pages/admin/CustomPages";
 
 // 404
 import NotFound from "@/pages/not-found";
@@ -121,17 +128,44 @@ function Router() {
       <Route path="/admin">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><AdminDashboard /></ProtectedRoute>}
       </Route>
+      <Route path="/admin/analytics">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><AnalyticsPage /></ProtectedRoute>}
+      </Route>
       <Route path="/admin/users">
         {() => <ProtectedRoute allowedRoles={[...SUPER_ADMIN_ONLY]}><UsersManagement /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/courses/new">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CourseEditor /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/courses/:id/edit">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CourseEditor /></ProtectedRoute>}
       </Route>
       <Route path="/admin/courses">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CoursesManagement /></ProtectedRoute>}
       </Route>
+      <Route path="/admin/categories">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CategoriesPage /></ProtectedRoute>}
+      </Route>
       <Route path="/admin/payments">
         {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><PaymentsPage /></ProtectedRoute>}
       </Route>
+      <Route path="/admin/blog/new">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><BlogEditor /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/blog/:id/edit">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><BlogEditor /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/blog">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><BlogManagement /></ProtectedRoute>}
+      </Route>
       <Route path="/admin/community">
         {() => <ProtectedRoute allowedRoles={[...MOD_ROLES]}><CommunityModeration /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/pages">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CustomPages /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/email-templates">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><EmailTemplates /></ProtectedRoute>}
       </Route>
       <Route path="/admin/settings">
         {() => <ProtectedRoute allowedRoles={["super_admin"]}><SiteSettings /></ProtectedRoute>}

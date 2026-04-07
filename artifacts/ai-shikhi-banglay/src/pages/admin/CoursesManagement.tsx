@@ -196,9 +196,9 @@ export default function CoursesManagement() {
                         </button>
                         {activeMenu === course.id && (
                           <div className="absolute right-0 bottom-8 z-20 w-44 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-hidden">
-                            <Link href={`/admin/courses/${course.id}`}>
+                            <Link href={`/admin/courses/${course.id}/edit`}>
                               <button className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-gray-300 hover:bg-gray-700 hover:text-white text-left">
-                                <Eye className="w-3.5 h-3.5" /> দেখুন/সম্পাদনা
+                                <Edit className="w-3.5 h-3.5" /> সম্পাদনা করুন
                               </button>
                             </Link>
                             {course.status !== "published" && (
