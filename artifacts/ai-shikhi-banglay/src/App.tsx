@@ -11,7 +11,7 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 import AuthCallbackPage from "@/pages/auth/AuthCallbackPage";
 
-// Student Dashboard pages
+// Student Dashboard
 import DashboardHome from "@/pages/dashboard/DashboardHome";
 import MyCourses from "@/pages/dashboard/MyCourses";
 import CourseLearning from "@/pages/dashboard/CourseLearning";
@@ -20,6 +20,14 @@ import Certificates from "@/pages/dashboard/Certificates";
 import Community from "@/pages/dashboard/Community";
 import ProfileSettings from "@/pages/dashboard/ProfileSettings";
 import BillingHistory from "@/pages/dashboard/BillingHistory";
+
+// Admin Panel
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import UsersManagement from "@/pages/admin/UsersManagement";
+import CoursesManagement from "@/pages/admin/CoursesManagement";
+import PaymentsPage from "@/pages/admin/PaymentsPage";
+import CommunityModeration from "@/pages/admin/CommunityModeration";
+import SiteSettings from "@/pages/admin/SiteSettings";
 
 // 404
 import NotFound from "@/pages/not-found";
@@ -30,7 +38,9 @@ const queryClient = new QueryClient({
   },
 });
 
-const STUDENT_ROLES = ["student", "admin", "super_admin", "moderator"] as const;
+const ALL_ROLES = ["student", "admin", "super_admin", "moderator"] as const;
+const ADMIN_ROLES = ["admin", "super_admin"] as const;
+const MOD_ROLES = ["admin", "super_admin", "moderator"] as const;
 
 function Router() {
   return (
@@ -42,36 +52,55 @@ function Router() {
       <Route path="/reset-password" component={ResetPasswordPage} />
       <Route path="/auth/callback" component={AuthCallbackPage} />
 
-      {/* Student dashboard routes */}
+      {/* ── Student Routes ── */}
       <Route path="/dashboard">
-        {() => <ProtectedRoute allowedRoles={[...STUDENT_ROLES]}><DashboardHome /></ProtectedRoute>}
+        {() => <ProtectedRoute allowedRoles={[...ALL_ROLES]}><DashboardHome /></ProtectedRoute>}
       </Route>
       <Route path="/dashboard/courses">
-        {() => <ProtectedRoute allowedRoles={[...STUDENT_ROLES]}><MyCourses /></ProtectedRoute>}
+        {() => <ProtectedRoute allowedRoles={[...ALL_ROLES]}><MyCourses /></ProtectedRoute>}
       </Route>
       <Route path="/dashboard/courses/:id/learn">
-        {() => <ProtectedRoute allowedRoles={[...STUDENT_ROLES]}><CourseLearning /></ProtectedRoute>}
+        {() => <ProtectedRoute allowedRoles={[...ALL_ROLES]}><CourseLearning /></ProtectedRoute>}
       </Route>
       <Route path="/dashboard/courses/:id/quiz">
-        {() => <ProtectedRoute allowedRoles={[...STUDENT_ROLES]}><CourseQuiz /></ProtectedRoute>}
+        {() => <ProtectedRoute allowedRoles={[...ALL_ROLES]}><CourseQuiz /></ProtectedRoute>}
       </Route>
       <Route path="/dashboard/certificates">
-        {() => <ProtectedRoute allowedRoles={[...STUDENT_ROLES]}><Certificates /></ProtectedRoute>}
+        {() => <ProtectedRoute allowedRoles={[...ALL_ROLES]}><Certificates /></ProtectedRoute>}
       </Route>
       <Route path="/dashboard/community">
-        {() => <ProtectedRoute allowedRoles={[...STUDENT_ROLES]}><Community /></ProtectedRoute>}
+        {() => <ProtectedRoute allowedRoles={[...ALL_ROLES]}><Community /></ProtectedRoute>}
       </Route>
       <Route path="/dashboard/profile">
-        {() => <ProtectedRoute allowedRoles={[...STUDENT_ROLES]}><ProfileSettings /></ProtectedRoute>}
+        {() => <ProtectedRoute allowedRoles={[...ALL_ROLES]}><ProfileSettings /></ProtectedRoute>}
       </Route>
       <Route path="/dashboard/billing">
-        {() => <ProtectedRoute allowedRoles={[...STUDENT_ROLES]}><BillingHistory /></ProtectedRoute>}
+        {() => <ProtectedRoute allowedRoles={[...ALL_ROLES]}><BillingHistory /></ProtectedRoute>}
+      </Route>
+
+      {/* ── Admin Routes ── */}
+      <Route path="/admin">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><AdminDashboard /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/users">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><UsersManagement /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/courses">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><CoursesManagement /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/payments">
+        {() => <ProtectedRoute allowedRoles={[...ADMIN_ROLES]}><PaymentsPage /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/community">
+        {() => <ProtectedRoute allowedRoles={[...MOD_ROLES]}><CommunityModeration /></ProtectedRoute>}
+      </Route>
+      <Route path="/admin/settings">
+        {() => <ProtectedRoute allowedRoles={["super_admin"]}><SiteSettings /></ProtectedRoute>}
       </Route>
 
       {/* Root → login */}
       <Route path="/" component={LoginPage} />
 
-      {/* 404 */}
       <Route component={NotFound} />
     </Switch>
   );
