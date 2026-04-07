@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
 import PublicLayout from "@/layouts/PublicLayout";
+import { SEO } from "@/components/SEO";
 import {
   Search, MessageSquare, Clock, Calendar, ChevronLeft, ChevronRight,
-  TrendingUp, Tag
+  TrendingUp, Tag, BookOpen, Users, Rss
 } from "lucide-react";
 
 interface BlogPost {
@@ -83,6 +84,12 @@ export default function BlogPage() {
 
   return (
     <PublicLayout>
+      <SEO
+        title="ব্লগ ও আর্টিকেল — AI, Technology ও ক্যারিয়ার টিপস বাংলায়"
+        description="AI, ChatGPT, Python, Machine Learning, Data Science, Digital Marketing ও Freelancing বিষয়ক সর্বশেষ বাংলা আর্টিকেল পড়ুন। বিশেষজ্ঞ লেখক দ্বারা তৈরি গভীর ও তথ্যবহুল কনটেন্ট।"
+        keywords="AI ব্লগ বাংলা, ChatGPT টিউটোরিয়াল, Python টিউটোরিয়াল, Machine Learning আর্টিকেল, Data Science বাংলা, Digital Marketing টিপস, Freelancing গাইড, AI সংবাদ, Technology বাংলা"
+        url="/blog"
+      />
       {/* Hero */}
       <section className="bg-gradient-to-b from-gray-900 to-gray-950 py-16 border-b border-gray-800/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -264,6 +271,31 @@ export default function BlogPage() {
           </div>
         </div>
       </div>
+
+      {/* Rich content for SEO */}
+      <section className="py-14 bg-gray-950 border-t border-gray-800/60">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">AI শিখি বাংলায় ব্লগ সম্পর্কে</h2>
+          <p className="text-gray-300 leading-relaxed mb-6">
+            AI শিখি বাংলায়ের ব্লগে আমরা নিয়মিত প্রকাশ করি বাংলায় AI, Technology, Digital Marketing, Freelancing ও ক্যারিয়ার বিষয়ক গভীর ও তথ্যবহুল আর্টিকেল। আমাদের অভিজ্ঞ লেখকরা জটিল বিষয়গুলো সহজ বাংলায় ব্যাখ্যা করেন।
+          </p>
+          <div className="grid sm:grid-cols-3 gap-4 text-left">
+            {[
+              { icon: BookOpen, title: "টিউটোরিয়াল", desc: "ধাপে ধাপে AI ও প্রযুক্তি শেখার গাইড" },
+              { icon: Users, title: "সাফল্যের গল্প", desc: "শিক্ষার্থীদের অনুপ্রেরণামূলক অভিজ্ঞতা" },
+              { icon: Rss, title: "সর্বশেষ সংবাদ", desc: "AI জগতের সর্বশেষ আপডেট বাংলায়" },
+            ].map((item, i) => (
+              <div key={i} className="flex gap-3 p-4 bg-gray-900/60 border border-gray-800/60 rounded-xl">
+                <item.icon className="w-5 h-5 text-violet-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-semibold text-white mb-1">{item.title}</h3>
+                  <p className="text-xs text-gray-400">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </PublicLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import PublicLayout from "@/layouts/PublicLayout";
+import { SEO } from "@/components/SEO";
 import { FileText } from "lucide-react";
 
 interface PolicyPageProps {
@@ -27,8 +28,21 @@ export function PolicyPage({ slug, title, fallback }: PolicyPageProps) {
       });
   }, [slug]);
 
+  const seoDescriptions: Record<string, string> = {
+    "privacy-policy": "AI শিখি বাংলায়ের গোপনীয়তা নীতি পড়ুন। আমরা কিভাবে আপনার ব্যক্তিগত তথ্য সংগ্রহ, ব্যবহার ও সুরক্ষা করি তা জানুন।",
+    "terms": "AI শিখি বাংলায়ের ব্যবহারের শর্তাবলী পড়ুন। কোর্স অ্যাক্সেস, বৌদ্ধিক সম্পদ ও নিষিদ্ধ কার্যক্রম সম্পর্কে জানুন।",
+    "refund-policy": "AI শিখি বাংলায়ের রিফান্ড নীতি পড়ুন। পেমেন্টের ৭ দিনের মধ্যে রিফান্ডের আবেদন করা যাবে।",
+    "cookie-policy": "AI শিখি বাংলায় কিভাবে কুকি ব্যবহার করে তা জানুন। কুকি নিয়ন্ত্রণের উপায় সম্পর্কে জানুন।",
+  };
+
   return (
     <PublicLayout>
+      <SEO
+        title={title}
+        description={seoDescriptions[slug] || `AI শিখি বাংলায়ের ${title} পড়ুন।`}
+        url={`/${slug}`}
+        noIndex={false}
+      />
       <section className="bg-gradient-to-b from-gray-900 to-gray-950 py-16 border-b border-gray-800/60">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-violet-500/15 mb-5">

@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
 import PublicLayout from "@/layouts/PublicLayout";
+import { SEO } from "@/components/SEO";
 import {
   BookOpen, Users, Award, Star, ChevronRight, Play, MessageSquare,
-  Zap, Target, TrendingUp, CheckCircle, ArrowRight, Clock, Calendar
+  Zap, Target, TrendingUp, CheckCircle, ArrowRight, Clock, Calendar,
+  GraduationCap, Shield, Headphones, Globe
 } from "lucide-react";
 
 interface Course {
@@ -98,8 +100,25 @@ export default function HomePage() {
     fetchAll();
   }, []);
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
   return (
     <PublicLayout>
+      <SEO
+        title="বাংলায় AI শিখুন — ChatGPT, Python, Machine Learning, Data Science কোর্স"
+        description="বাংলাদেশের #১ AI শিক্ষামূলক প্ল্যাটফর্ম। বাংলায় ChatGPT, Python, Machine Learning, Data Science, Digital Marketing শিখুন। ৫০,০০০+ শিক্ষার্থী, ১০০+ কোর্স, ভেরিফাইড সার্টিফিকেট ও লাইভ কমিউনিটি। বিকাশ, নগদ, কার্ডে পেমেন্ট।"
+        keywords="AI শিখি বাংলায়, বাংলায় AI কোর্স, ChatGPT বাংলা, Python কোর্স বাংলাদেশ, Machine Learning কোর্স, Data Science বাংলা, অনলাইন কোর্স, ডিজিটাল মার্কেটিং, ফ্রিল্যান্সিং, AI সার্টিফিকেট"
+        url="/"
+        schema={faqSchema}
+      />
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-indigo-950 pt-20 pb-28">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-violet-600/20 via-transparent to-transparent pointer-events-none" />
@@ -290,6 +309,37 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Learning Path ── */}
+      <section className="py-20 bg-gray-900/50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <p className="text-sm font-semibold text-violet-400 uppercase tracking-wider mb-2">ধাপে ধাপে শিখুন</p>
+            <h2 className="text-3xl font-bold text-white mb-4">আমাদের শিক্ষা পথ</h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">শূন্য থেকে শুরু করে বিশেষজ্ঞ হওয়ার সম্পূর্ণ রোডম্যাপ। প্রতিটি ধাপ সহজ ও কার্যকর।</p>
+          </div>
+          <div className="relative">
+            <div className="hidden lg:block absolute top-8 left-0 right-0 h-0.5 bg-gradient-to-r from-violet-600/0 via-violet-600/50 to-violet-600/0" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { step: "০১", icon: GraduationCap, title: "বেসিক শিখুন", desc: "AI ও Technology-র মূল বিষয়গুলো সহজ ভাষায় বুঝুন। কোনো পূর্বজ্ঞান দরকার নেই।", color: "from-violet-500 to-purple-600" },
+                { step: "০২", icon: BookOpen, title: "কোর্স সম্পন্ন করুন", desc: "ভিডিও লেসন, কুইজ ও প্র্যাকটিক্যাল প্রজেক্টের মাধ্যমে দক্ষতা অর্জন করুন।", color: "from-indigo-500 to-blue-600" },
+                { step: "০৩", icon: Users, title: "কমিউনিটিতে যোগ দিন", desc: "হাজারো শিক্ষার্থীর সাথে সংযুক্ত হন, প্রশ্ন করুন ও অভিজ্ঞতা শেয়ার করুন।", color: "from-blue-500 to-cyan-600" },
+                { step: "০৪", icon: Award, title: "সার্টিফিকেট পান", desc: "কোর্স সম্পন্ন করে ভেরিফাইড সার্টিফিকেট ডাউনলোড করুন। CV-তে যোগ করুন।", color: "from-emerald-500 to-teal-600" },
+              ].map((item, i) => (
+                <div key={i} className="relative bg-gray-900 border border-gray-800/60 rounded-2xl p-6 hover:border-violet-500/30 transition-all hover:shadow-lg">
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-4 shadow-lg`}>
+                    <item.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <span className="text-xs font-bold text-gray-600 tracking-widest">{item.step}</span>
+                  <h3 className="font-bold text-white text-lg mt-1 mb-2">{item.title}</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Blog Preview ── */}
       <section className="py-20 bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -467,11 +517,35 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Trust Badges ── */}
+      <section className="py-12 bg-gray-900 border-y border-gray-800/60">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-xs text-gray-500 font-medium uppercase tracking-widest mb-8">আমাদের বিশ্বাসযোগ্যতা</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {[
+              { icon: Shield, title: "SSL নিরাপদ পেমেন্ট", desc: "SSLCommerz দ্বারা সুরক্ষিত" },
+              { icon: Headphones, title: "২৪/৭ সাপোর্ট", desc: "WhatsApp ও ইমেইলে সহায়তা" },
+              { icon: Globe, title: "যেকোনো ডিভাইসে", desc: "মোবাইল, ট্যাবলেট ও পিসি" },
+              { icon: Award, title: "ISO সার্টিফাইড", desc: "মানসম্পন্ন শিক্ষা নিশ্চিত" },
+            ].map((b, i) => (
+              <div key={i} className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center mb-3">
+                  <b.icon className="w-6 h-6 text-violet-400" />
+                </div>
+                <div className="text-sm font-semibold text-white">{b.title}</div>
+                <div className="text-xs text-gray-500 mt-1">{b.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section className="py-20 bg-gradient-to-br from-violet-900/40 via-gray-950 to-indigo-900/40">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-5">আজই শুরু করুন</h2>
-          <p className="text-lg text-gray-300 mb-10">বিনামূল্যে রেজিস্ট্রেশন করুন এবং আপনার AI শিক্ষার যাত্রা শুরু করুন।</p>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-5">আজই শুরু করুন আপনার AI শিক্ষার যাত্রা</h2>
+          <p className="text-lg text-gray-300 mb-4">বিনামূল্যে রেজিস্ট্রেশন করুন। কোনো ক্রেডিট কার্ড দরকার নেই।</p>
+          <p className="text-sm text-gray-500 mb-10">ইতিমধ্যে ৫০,০০০+ শিক্ষার্থী তাদের AI শিক্ষার যাত্রা শুরু করেছেন। আপনিও যোগ দিন!</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
               <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all shadow-xl shadow-violet-500/30 text-lg">

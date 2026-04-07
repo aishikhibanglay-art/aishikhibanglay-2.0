@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import PublicLayout from "@/layouts/PublicLayout";
+import { SEO } from "@/components/SEO";
 import {
   Users, MessageSquare, ThumbsUp, ChevronRight, Shield,
   Pin, Lock, LogIn
@@ -79,6 +80,12 @@ export default function CommunityPublicPage() {
 
   return (
     <PublicLayout>
+      <SEO
+        title="কমিউনিটি — বাংলায় AI শিক্ষার্থীদের সম্প্রদায়"
+        description="AI শিখি বাংলায়ের কমিউনিটিতে যোগ দিন। হাজারো AI শিক্ষার্থীর সাথে সংযুক্ত হন, প্রশ্ন করুন, উত্তর পান, অভিজ্ঞতা শেয়ার করুন এবং একসাথে বেড়ে উঠুন।"
+        keywords="AI কমিউনিটি বাংলাদেশ, AI শিক্ষার্থী, বাংলা AI ফোরাম, ChatGPT হেল্প, Python সাহায্য, Machine Learning কমিউনিটি"
+        url="/community"
+      />
       {/* Hero */}
       <section className="bg-gradient-to-b from-gray-900 to-gray-950 py-16 border-b border-gray-800/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

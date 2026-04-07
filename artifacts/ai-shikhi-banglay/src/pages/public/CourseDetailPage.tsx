@@ -3,6 +3,7 @@ import { Link, useParams } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import PublicLayout from "@/layouts/PublicLayout";
+import { SEO } from "@/components/SEO";
 import {
   BookOpen, Star, Clock, Users, Award, Lock, Play, ChevronDown,
   CheckCircle, Share2, Facebook, Twitter, Linkedin, MessageCircle,
@@ -182,8 +183,48 @@ export default function CourseDetailPage() {
     </PublicLayout>
   );
 
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: course.title,
+    description: course.short_desc || course.description || course.title,
+    url: `https://aishikhibanglay.com/courses/${course.slug}`,
+    image: course.thumbnail_url || "https://aishikhibanglay.com/opengraph.jpg",
+    provider: {
+      "@type": "Organization",
+      name: "AI শিখি বাংলায়",
+      sameAs: "https://aishikhibanglay.com",
+    },
+    instructor: course.profiles ? {
+      "@type": "Person",
+      name: course.profiles.name,
+    } : undefined,
+    offers: {
+      "@type": "Offer",
+      price: course.is_free ? 0 : course.price_bdt,
+      priceCurrency: "BDT",
+      availability: "https://schema.org/InStock",
+      url: `https://aishikhibanglay.com/courses/${course.slug}`,
+    },
+    courseLanguage: "Bengali",
+    educationalLevel: "Beginner to Advanced",
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "Online",
+      courseWorkload: course.total_duration > 0 ? `PT${Math.round(course.total_duration / 3600)}H` : undefined,
+    },
+  };
+
   return (
     <PublicLayout>
+      <SEO
+        title={`${course.title} — বাংলায় শিখুন`}
+        description={course.short_desc || `${course.title} কোর্সটি বাংলায় শিখুন AI শিখি বাংলায়তে। ভেরিফাইড সার্টিফিকেট, আজীবন অ্যাক্সেস।`}
+        keywords={`${course.title}, ${course.category || ""}, AI কোর্স বাংলাদেশ, বাংলায় কোর্স, অনলাইন কোর্স`}
+        image={course.thumbnail_url || undefined}
+        url={`/courses/${course.slug}`}
+        schema={courseSchema}
+      />
       {/* Hero */}
       <section className="bg-gradient-to-b from-gray-900 to-gray-950 border-b border-gray-800/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "wouter";
 import { supabase } from "@/lib/supabase";
 import PublicLayout from "@/layouts/PublicLayout";
+import { SEO } from "@/components/SEO";
 import {
   Search, BookOpen, Filter, X, Grid, List, Star, Clock, Users,
-  ChevronLeft, ChevronRight, SlidersHorizontal
+  ChevronLeft, ChevronRight, SlidersHorizontal, CheckCircle, Award, Zap
 } from "lucide-react";
 
 interface Course {
@@ -97,8 +98,29 @@ export default function CoursesPage() {
 
   const hasFilters = search || selectedCategory || priceFilter !== "all" || typeFilter !== "all";
 
+  const courseListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "AI শিখি বাংলায় কোর্সসমূহ",
+    description: "বাংলাদেশের সেরা AI, Python, Machine Learning, Data Science কোর্স",
+    url: "https://aishikhibanglay.com/courses",
+    itemListElement: courses.slice(0, 10).map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: c.title,
+      url: `https://aishikhibanglay.com/courses/${c.slug}`,
+    })),
+  };
+
   return (
     <PublicLayout>
+      <SEO
+        title="সকল কোর্সসমূহ — AI, Python, Machine Learning, Data Science বাংলায়"
+        description="বাংলাদেশের সেরা AI ও Technology কোর্স সমূহ। ChatGPT, Python, Machine Learning, Data Science, Digital Marketing, Graphic Design, Freelancing কোর্স বাংলায়। ভেরিফাইড সার্টিফিকেট, আজীবন অ্যাক্সেস, বিকাশ/নগদে পেমেন্ট।"
+        keywords="AI কোর্স বাংলাদেশ, ChatGPT কোর্স, Python কোর্স বাংলা, Machine Learning কোর্স, Data Science বাংলা, Digital Marketing কোর্স, Freelancing কোর্স, বাংলায় কোর্স, অনলাইন কোর্স বাংলাদেশ"
+        url="/courses"
+        schema={courseListSchema}
+      />
       {/* Hero */}
       <section className="bg-gradient-to-b from-gray-900 to-gray-950 py-16 border-b border-gray-800/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -358,6 +380,49 @@ export default function CoursesPage() {
           </div>
         )}
       </div>
+
+      {/* Rich content for SEO */}
+      <section className="py-16 bg-gray-900 border-t border-gray-800/60">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold text-white mb-8 text-center">কেন AI শিখি বাংলায়ের কোর্স বেছে নেবেন?</h2>
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {[
+              { icon: CheckCircle, title: "বাংলায় সম্পূর্ণ কোর্স", desc: "সকল কোর্স শতভাগ বাংলায় তৈরি। ইংরেজি না জানলেও সমস্যা নেই, শূন্য থেকে শুরু করা যাবে।" },
+              { icon: Award, title: "ভেরিফাইড সার্টিফিকেট", desc: "প্রতিটি কোর্স সম্পন্ন করলে QR কোড যুক্ত ভেরিফাইড ডিজিটাল সার্টিফিকেট পাবেন।" },
+              { icon: Zap, title: "আজীবন অ্যাক্সেস", desc: "একবার কিনলে আজীবন অ্যাক্সেস। কোর্স আপডেট হলেও নতুন কনটেন্ট বিনামূল্যে পাবেন।" },
+            ].map((item, i) => (
+              <div key={i} className="flex gap-4 p-5 bg-gray-800/60 rounded-xl border border-gray-700/60">
+                <item.icon className="w-6 h-6 text-violet-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold text-white mb-1">{item.title}</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-gray-800/40 border border-gray-700/60 rounded-2xl p-8">
+            <h2 className="text-xl font-bold text-white mb-4">আমাদের কোর্স ক্যাটাগরি</h2>
+            <div className="text-gray-300 leading-relaxed space-y-3">
+              <p>
+                <strong className="text-white">AI ও Machine Learning:</strong> ChatGPT, Gemini, Claude সহ সর্বশেষ AI টুলস ব্যবহার করতে শিখুন। Prompt Engineering, AI Image Generation, AI Video Creation সহ আরও অনেক কিছু।
+              </p>
+              <p>
+                <strong className="text-white">Python Programming:</strong> শূন্য থেকে শুরু করে Python প্রোগ্রামিং শিখুন। Data Analysis, Automation, Web Scraping, Machine Learning Implementation সহ।
+              </p>
+              <p>
+                <strong className="text-white">Data Science:</strong> ডেটা সংগ্রহ, পরিষ্কার, বিশ্লেষণ ও ভিজ্যুয়ালাইজেশন শিখুন। Pandas, NumPy, Matplotlib, Seaborn সহ সব প্রয়োজনীয় টুলস।
+              </p>
+              <p>
+                <strong className="text-white">Digital Marketing:</strong> Facebook Ads, Google Ads, SEO, Email Marketing, Social Media Marketing — সম্পূর্ণ ডিজিটাল মার্কেটিং বাংলায় শিখুন।
+              </p>
+              <p>
+                <strong className="text-white">Freelancing:</strong> Upwork, Fiverr, Freelancer.com-এ সফল ফ্রিল্যান্সার হওয়ার সম্পূর্ণ গাইড। প্রোফাইল তৈরি থেকে পেমেন্ট পাওয়া পর্যন্ত।
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </PublicLayout>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { supabase } from "@/lib/supabase";
 import PublicLayout from "@/layouts/PublicLayout";
+import { SEO } from "@/components/SEO";
 import {
   Clock, Calendar, Facebook, Twitter, Linkedin, MessageCircle,
   Tag, Eye, MessageSquare, AlertCircle, ChevronRight
@@ -92,8 +93,35 @@ export default function BlogPostPage() {
     </PublicLayout>
   );
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt || post.title,
+    image: post.thumbnail_url || "https://aishikhibanglay.com/opengraph.jpg",
+    datePublished: post.published_at,
+    author: { "@type": "Person", name: post.profiles?.name || "AI শিখি বাংলায়" },
+    publisher: {
+      "@type": "Organization",
+      name: "AI শিখি বাংলায়",
+      logo: { "@type": "ImageObject", url: "https://aishikhibanglay.com/favicon.svg" },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://aishikhibanglay.com/blog/${post.slug}` },
+  };
+
   return (
     <PublicLayout>
+      <SEO
+        title={post.title}
+        description={post.excerpt || `${post.title} — AI শিখি বাংলায়তে পড়ুন`}
+        keywords={[...(post.tags || []), post.category || "", "AI ব্লগ বাংলা", "Technology আর্টিকেল"].filter(Boolean).join(", ")}
+        image={post.thumbnail_url || undefined}
+        url={`/blog/${post.slug}`}
+        type="article"
+        publishedAt={post.published_at || undefined}
+        author={post.profiles?.name}
+        schema={articleSchema}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
